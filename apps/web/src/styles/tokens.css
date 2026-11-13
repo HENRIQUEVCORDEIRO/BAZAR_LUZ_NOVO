@@ -2,9 +2,14 @@
  * Design tokens — Brandbook Luz da Esperança (docs/marca/identidade-visual.md)
  *
  * 1. Paleta da marca (valores EXATOS do brandbook — não alterar).
- * 2. Tokens semânticos (o que as telas usam). Quando a cor da marca não atinge
+ * 2. Tokens semânticos (o que as telas usam): fundos, superfícies, textos e bordas
+ *    vêm das superfícies neutras (seção 3). Quando a cor da marca não atinge
  *    contraste WCAG AA (RNF-16) para texto pequeno, usa-se uma variação mais
  *    escura do MESMO matiz, documentada ao lado.
+ * 3. Superfícies neutras (refatoração visual): cinza claro nos fundos, branco nas
+ *    superfícies de conteúdo e cinza um tom abaixo no que é secundário. O verde da
+ *    identidade segue nas ações (--primary), na marca (--brand), no foco, nos
+ *    indicadores de sucesso e nas séries dos gráficos.
  * ========================================================================== */
 :root {
   /* --- 1. Paleta estratégica (slide 08) --- */
@@ -32,15 +37,15 @@
   --fonte-corpo:  "Nunito Variable", "Nunito", system-ui, "Segoe UI", Roboto, sans-serif; /* corpo */
   --fonte-mono:   ui-monospace, "Cascadia Mono", Consolas, monospace;           /* comprovante */
 
-  /* --- 2. Tokens semânticos (tema claro) --- */
-  --bg: var(--marca-branco-osso);
-  --surface: #ffffff;
-  --surface-2: #f3efe7;                /* osso um tom abaixo */
-  --text: var(--marca-cinza-texto);    /* 8,3:1 sobre o fundo */
-  --heading: var(--marca-verde-musgo); /* 7,3:1 */
-  --muted: #6b6b63;                    /* cinza-suave escurecido: 5,0:1 (o original dá 4,0:1) */
-  --border: var(--marca-linho);
-  --border-strong: #b5ad9e;            /* contorno de campos */
+  /* --- 2. Tokens semânticos (tema claro) — apontam para as superfícies neutras (seção 3) --- */
+  --bg: var(--neutro-fundo);
+  --surface: var(--neutro-superficie);
+  --surface-2: var(--neutro-fundo-alt);
+  --text: var(--neutro-texto);         /* 13,2:1 sobre o fundo */
+  --heading: var(--neutro-titulo);     /* 16,3:1 */
+  --muted: var(--neutro-secundario);   /* 4,9:1 (AA) */
+  --border: var(--neutro-borda);
+  --border-strong: var(--neutro-borda-forte); /* contorno de campos: ≥ 3:1 (RNF-16 / WCAG 1.4.11) */
 
   --primary: #4e7a34;                  /* verde-esperança AA: 5,1:1 com texto branco */
   --primary-hover: var(--marca-verde-musgo);
@@ -66,12 +71,27 @@
   --radius-sm: 8px;
   --radius: 12px;
   --radius-lg: 16px;
-  --shadow: 0 1px 2px rgb(45 70 31 / 0.06), 0 2px 8px rgb(45 70 31 / 0.05);
-  --shadow-lg: 0 12px 40px rgb(45 70 31 / 0.22);
+  --shadow: var(--neutro-sombra);
+  --shadow-lg: var(--neutro-sombra-alta);
   --focus: var(--marca-verde-esperanca);
   /* séries dos gráficos (S5-18): acentos da marca, nesta ordem fixa; validados para daltonismo e contraste
      (o laranja fica abaixo de 3:1 no branco, então todo gráfico tem rótulo e tabela) */
   --serie-1: #5b8c3e; --serie-2: #3d9bd1; --serie-3: #f2994a; --serie-4: #9b6fc4;
+
+  /* --- 3. Superfícies neutras (refatoração visual — vale para todas as telas) ---
+     Cinza claro nos fundos, branco nas superfícies de conteúdo e cinza um tom abaixo no que é
+     secundário; o verde da identidade continua nos ações, no foco e nos indicadores de sucesso.
+     Nenhum valor da paleta da marca muda aqui — os tokens da seção 1 ficam intocados. */
+  --neutro-fundo:       #f5f5f5; /* fundo geral da aplicação */
+  --neutro-fundo-alt:   #f0f0f0; /* superfícies secundárias e áreas agrupadas */
+  --neutro-superficie:  #ffffff; /* cards, painéis e áreas de conteúdo */
+  --neutro-texto:       #262a30; /* texto principal: 13,2:1 sobre o fundo */
+  --neutro-titulo:      #15181d; /* títulos: 16,3:1 sobre o fundo */
+  --neutro-secundario:  #656b76; /* legendas e metadados: 4,9:1 sobre o fundo (AA) */
+  --neutro-borda:       #e3e5e9; /* divisores discretos */
+  --neutro-borda-forte: #7f858e; /* contorno de campos: 3,2:1 no pior caso (err-bg) — AA 1.4.11 */
+  --neutro-sombra:      0 1px 2px rgb(16 24 40 / .05), 0 2px 6px rgb(16 24 40 / .05);
+  --neutro-sombra-alta: 0 8px 24px rgb(16 24 40 / .12);
 
   color-scheme: light;
 }
@@ -79,14 +99,16 @@
 /* Tema escuro: derivado do verde-floresta das capas do brandbook */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #141f0e;
-    --surface: #1c2a15;
-    --surface-2: #26361d;
-    --text: #ece8df;
-    --heading: #c9dcb8;
-    --muted: #b4c2a8;
-    --border: #34472a;
-    --border-strong: #5a6e4c;
+    --bg: var(--neutro-fundo);
+    --surface: var(--neutro-superficie);
+    --surface-2: var(--neutro-fundo-alt);
+    --text: var(--neutro-texto);
+    --heading: var(--neutro-titulo);
+    --muted: var(--neutro-secundario);
+    --border: var(--neutro-borda);
+    --border-strong: var(--neutro-borda-forte);
+    --shadow: var(--neutro-sombra);
+    --shadow-lg: var(--neutro-sombra-alta);
     --primary: #8dba6c;
     --primary-hover: #a5cb88;
     --primary-soft: #23361a;
@@ -101,8 +123,19 @@
     --nav-bg: #0f180a;
     --nav-active-bg: #26361d;
     --focus: #a5cb88;
-    /* os mesmos matizes, mais escuros para a faixa de luminosidade do fundo escuro (validados contra #1c2a15) */
+    /* os mesmos matizes, mais escuros para a faixa de luminosidade do fundo escuro (validados contra #24262b: 4,3–4,8:1) */
     --serie-1: #6b9f4c; --serie-2: #3b95cf; --serie-3: #c9802d; --serie-4: #9d77cc;
+    /* superfícies neutras no mesmo tom (mesma hierarquia: fundo < secundário < superfície) */
+    --neutro-fundo:       #141517;
+    --neutro-fundo-alt:   #1d1f23;
+    --neutro-superficie:  #24262b;
+    --neutro-texto:       #d7dae0;
+    --neutro-titulo:      #f1f3f5;
+    --neutro-secundario:  #9ba1ab;
+    --neutro-borda:       #2c2f34;
+    --neutro-borda-forte: #707781; /* contorno de campos: 3,0:1 no pior caso entre as superfícies — AA 1.4.11 */
+    --neutro-sombra:      0 1px 2px rgb(0 0 0 / .4), 0 2px 6px rgb(0 0 0 / .3);
+    --neutro-sombra-alta: 0 8px 24px rgb(0 0 0 / .5);
     color-scheme: dark;
   }
 }
