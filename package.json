@@ -11,6 +11,7 @@
     "apps/api"
   ],
   "scripts": {
+    "dev": "concurrently -k -n api,web \"npm:dev:api\" \"npm:dev:web\"",
     "dev:web": "npm run dev -w @bazar/web",
     "dev:api": "npm run dev -w @bazar/api",
     "build": "npm run build -w @bazar/api && npm run build -w @bazar/web",
@@ -34,5 +35,8 @@
     "deepmerge-ts": "^8.0.2",
     "uuid": "^11.1.1",
     "vite": "^7.3.7"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
   }
 }
