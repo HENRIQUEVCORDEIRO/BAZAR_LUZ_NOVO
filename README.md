@@ -13,9 +13,7 @@ Monolito **React 19 + Vite** (web) · **Fastify 5 + Prisma 7 + PostgreSQL** (API
 ├── apps/
 │   ├── web/                @bazar/web — front-end (PDV + Backoffice)
 │   │   ├── src/features/   telas, organizadas por domínio
-│   │   ├── src/shared/     componentes, cliente da API e utilitários comuns
-│   │   ├── src/mocks/      API simulada (só em desenvolvimento, com VITE_USE_MOCK=true)
-│   │   └── tests-ui/       testes de tela no navegador (rodam à parte, fora do build)
+│   │   └── src/shared/     componentes, cliente da API e utilitários comuns
 │   └── api/                @bazar/api — API REST /api/v1
 │       ├── src/modules/    rotas e regras, organizadas por domínio
 │       ├── src/shared/     código comum (erros, auditoria, idempotência, permissões)
@@ -51,11 +49,7 @@ Os domínios têm **o mesmo nome no front e no back**:
 
 ## Começar
 
-São dois jeitos de rodar:
-
-- **Opção A — só as telas, com a API simulada:** precisa só do Node. Bom para conhecer o sistema e apresentar. Os
-  dados ficam na memória da aba (o F5 zera tudo).
-- **Opção B — o sistema completo (API + banco):** precisa do Node e do PostgreSQL. É o que guarda os dados de verdade.
+O sistema usa só dados reais (front + API + banco). Não há camada simulada.
 
 Os comandos estão para **Linux** (terminal) e para **Windows 10/11** (use o **PowerShell**, não o Prompt de Comando).
 
@@ -65,7 +59,7 @@ Os comandos estão para **Linux** (terminal) e para **Windows 10/11** (use o **P
 |---|---|---|
 | Git | qualquer recente | baixar o projeto |
 | Node.js (com o npm) | **22** (`.nvmrc`); no mínimo 20.19 | rodar o front e a API |
-| PostgreSQL | **16** recomendado (funciona do 14 em diante) | banco de dados (só na opção B) |
+| PostgreSQL | **16** recomendado (funciona do 14 em diante) | banco de dados |
 | Navegador | Chrome, Edge ou Firefox atualizado | usar o sistema |
 
 #### Linux
@@ -142,27 +136,21 @@ npm install            # na raiz: instala o front e a API e gera o cliente do Pr
 Se o `npm install` avisar que pulou scripts de instalação (o npm mais novo bloqueia), gere o cliente do Prisma à mão:
 `npx prisma generate` dentro de `apps/api`.
 
-### 3. Opção A — só as telas, com a API simulada
+### 3. Configurar o front
 
 Linux:
 
 ```bash
-cp apps/web/.env.example apps/web/.env.local   # já vem com VITE_USE_MOCK=true
-npm run dev:web
+cp apps/web/.env.example apps/web/.env.local
 ```
 
 Windows (PowerShell):
 
 ```powershell
-Copy-Item apps/web/.env.example apps/web/.env.local   # já vem com VITE_USE_MOCK=true
-npm run dev:web
+Copy-Item apps/web/.env.example apps/web/.env.local
 ```
 
-Abra **http://localhost:5173**. Usuários de teste (só existem neste modo): `admin` / `Admin@123`,
-`vendedor` / `Vendedor@123`, `estoquista` / `Estoquista@123`, `financeiro` / `Financeiro@123`.
-Os dados ficam na memória da aba: o F5 zera tudo e não dá para usar em mais de um aparelho.
-
-### 4. Opção B — o sistema completo (API + banco)
+### 4. O sistema completo (API + banco)
 
 Escolha **três senhas** antes de começar (só letras e números, para não precisar escapar nada na URL do banco):
 a do dono do banco (`<senha_owner>`), a da API (`<senha_api>`) e a do administrador inicial do sistema (12 caracteres
@@ -226,15 +214,7 @@ psql -U postgres -d bazar -v senha_api="<senha_api>" -f database/03_seguranca_pa
 npm run db:seed        # cria o admin com a senha de ADMIN_INITIAL_PASSWORD
 ```
 
-**4.4. Apontar o front para a API real**
-
-Crie o `apps/web/.env.local` (se ainda não existir, copie do `.env.example` como na opção A) e deixe a linha assim:
-
-```
-VITE_USE_MOCK=false
-```
-
-**4.5. Subir** (dois terminais abertos na pasta do projeto, iguais nos dois sistemas)
+**4.4. Subir** (dois terminais abertos na pasta do projeto, iguais nos dois sistemas)
 
 ```bash
 npm run dev:api        # terminal 1: http://localhost:3000/api/v1
@@ -264,7 +244,7 @@ psql -U postgres -d bazar -v senha_api="<senha_api>" -f database/03_seguranca_pa
 ```
 
 Se o login der erro de servidor depois do `pull`, gere o cliente do Prisma (`npx prisma generate` em `apps/api`) e
-reinicie o `dev:api`. Com a API simulada, só reinicie o `dev:web`.
+reinicie o `dev:api`.
 
 ### Problemas comuns
 
@@ -274,8 +254,7 @@ reinicie o `dev:api`. Com a API simulada, só reinicie o `dev:web`.
 | Windows: "psql não é reconhecido como comando" | A pasta `bin` do PostgreSQL não está no PATH | Passo 1 (Windows) e feche e abra o PowerShell; ou use o "SQL Shell (psql)" do menu Iniciar |
 | Linux: `psql: ... Peer authentication failed for user "postgres"` | No Linux o `postgres` entra pelo usuário do sistema | Use `sudo -u postgres psql ...` |
 | Linux: `Permission denied` ao ler `database/03_seguranca_papeis.sql` com `-f` | O usuário `postgres` não lê a sua pasta pessoal | Mande o arquivo pela entrada: `... < database/03_seguranca_papeis.sql` (passo 4.3) |
-| "Erro inesperado" / "Não foi possível falar com a API" no login | Front no modo API real, mas a API não está rodando (ou falta `apps/web/.env.local`) | Rode `npm run dev:api` **ou** use `VITE_USE_MOCK=true` em `apps/web/.env.local`; reinicie o `dev:web` depois de mudar o `.env.local` |
-| Usuários de teste (`Admin@123`) não entram com a API ligada | Eles só existem na API simulada | Use o admin do seed (`ADMIN_INITIAL_PASSWORD`) |
+| "Erro inesperado" / "Não foi possível falar com a API" no login | A API não está rodando (ou falta `apps/web/.env.local`) | Rode `npm run dev:api`; reinicie o `dev:web` depois de mudar o `.env.local` |
 | A API não sobe: `[config] variáveis de ambiente inválidas` | `.env` incompleto | Preencha as variáveis citadas (a mensagem mostra só os nomes) |
 | Toda tela dá erro de servidor | `DATABASE_URL` usa o papel `bazar_api`, que ainda não existe | Rode `database/03_seguranca_papeis.sql` (passo 4.3) |
 | Login dá erro de servidor depois de um `git pull` | Migração nova sem o cliente do Prisma atualizado | Passo 5 |

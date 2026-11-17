@@ -10,8 +10,7 @@ const key = process.env.VITE_HTTPS_KEY;
 if (!!cert !== !!key) throw new Error('[vite] para o HTTPS de teste informe as duas variáveis: VITE_HTTPS_CERT e VITE_HTTPS_KEY');
 const https = cert && key ? { cert: readFileSync(cert), key: readFileSync(key) } : undefined;
 
-// O back-end (Fastify) roda separado; em dev com API real, o proxy evita CORS.
-// Com VITE_USE_MOCK=true o proxy não é usado: a camada src/mocks responde em memória.
+// O back-end (Fastify) roda separado; em dev, o proxy evita CORS.
 export default defineConfig({
   plugins: [react()],
   server: {

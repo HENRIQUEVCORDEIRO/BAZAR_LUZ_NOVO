@@ -1,7 +1,7 @@
 # @bazar/api — Back-end
 
 API do Sistema de Bazar (monolito **Fastify 5 + TypeScript estrito + Prisma 7 + PostgreSQL**).
-Implementa os contratos que o front-end já consome (`apps/web/src/features/*/*.api.ts` e a API simulada em `apps/web/src/mocks/server.ts`)
+Implementa os contratos que o front-end já consome (`apps/web/src/features/*/*.api.ts`)
 sobre o modelo do **doc 04 — Modelagem do Banco de Dados**, com as regras de negócio do **doc 02** (RN-01 a RN-33).
 
 ## Rodar (desenvolvimento)
@@ -17,7 +17,7 @@ npm run db:seed                   # Administrador inicial (troca de senha no 1º
 npm run dev                       # http://localhost:3000/api/v1  ·  /health
 ```
 
-No front-end: `VITE_USE_MOCK=false` e um proxy do Vite de `/api` para `http://localhost:3000` (mesma origem: o cookie
+No front-end: um proxy do Vite de `/api` para `http://localhost:3000` (mesma origem: o cookie
 de refresh é `SameSite=Strict`, `Path=/api/v1/auth`).
 
 Testes ponta a ponta (banco de **teste** vazio + seed, API rodando):
