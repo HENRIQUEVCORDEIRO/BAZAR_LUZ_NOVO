@@ -39,7 +39,7 @@ Sistema web do bazar beneficente (PDV, doações, estoque duplo, caixa, financei
 - Toda rota da API declara `config.acesso`; rota sem regra não sobe.
 - Modelo de dados: `apps/api/prisma/schema.prisma`; SQL do DBA em `database/`.
 - Testes: `apps/api/tests/` (smoke, concorrencia, reteste-qa).
-- API simulada do front (só em dev): `apps/web/src/mocks/`.
+- API simulada do front removida: `apps/web/src/mocks/` e `apps/web/tests-ui/` foram excluídos; o front consome só a API real.
 
 ## Rodar
 `npm install` na raiz. Front: `npm run dev:web`. API: `npm run dev:api`. Verificação: `npm run typecheck`, `npm run build`, `npm run test:smoke`, `test:concorrencia`, `test:reteste` (sempre em banco de TESTE). Detalhes e variáveis em `README.md`. Antes de subir um servidor, confira se a porta está livre (`ss -ltnp`): outros projetos desta máquina usam portas parecidas. Veja `memoria.md`.

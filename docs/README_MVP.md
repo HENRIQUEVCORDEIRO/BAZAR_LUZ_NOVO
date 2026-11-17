@@ -78,8 +78,7 @@ BAZAR/
 │   │       ├── features/    um módulo por domínio: auth, inicio, pdv, caixa, entradas,
 │   │       │                estoque, financeiro, relatorios, cadastros, admin
 │   │       ├── shared/      api (cliente HTTP, tipos), components, hooks, lib
-│   │       ├── styles/      tokens.css (brandbook) → base → components → layout → pdv → print
-│   │       └── mocks/       API simulada, só em desenvolvimento (fora do build)
+│   │       └── styles/      tokens.css (brandbook) → base → components → layout → pdv → print
 │   └── api/                 @bazar/api — API REST /api/v1
 │       ├── prisma/          schema (33 tabelas, 18 enums), migrações 0001–0003, seed
 │       ├── src/
@@ -333,7 +332,7 @@ Segue o brandbook da instituição (`docs/marca/`):
 | `database/12_testes_0013.sql` (Sprint 5: formato da chave da NF-e, chave única, só compra tem nota) | 9 de 9 |
 | `database/07_manutencao_rotina.sql` (conferência de saldo e prestação de contas) | 0 divergência |
 | `database/05_carga_volume_teste.sql` no modelo do produto (escala 1: 64 mil produtos, 70 mil itens, 141 mil movimentações, 66 mil vendas, 2 mil com PEPS em duas entradas) + `07` + `06` | ~11 min de carga, 0 divergência, as 13 consultas abaixo de 150 ms |
-| Telas no navegador (`apps/web/tests-ui/`: CPF, janelas do PDV, cadastro e aprovação de produtos, PDV e etiquetas da Sprint 4, câmera) | 11, 14, 19, 30 e 18 ok |
+| Telas no navegador (roteiros removidos junto com a API simulada; validação atual só na API real + uso manual) | removidos |
 | Telas da Sprint 3 no navegador (Chrome por CDP, sistema real) | 20 + 9 (perfis pela tela) + 11 (correções do QA e impressão do caixa) ok |
 | Etiquetas no sistema real (PDF no tamanho do rolo, código lido pelo `zbarimg` de 30 × 20 a 120 × 100 mm) | 5 ok, todos os tamanhos lidos |
 | Typecheck web + api e `npm audit` | 0 erros, 0 vulnerabilidades |
@@ -347,8 +346,8 @@ Teste de volume (`05_carga_volume_teste.sql`): cerca de 5 anos simulados — 64 
 ```bash
 npm install                                  # na raiz: instala web + api
 
-# Só o front, com API simulada (sem banco)
-cp apps/web/.env.example apps/web/.env.local # VITE_USE_MOCK=true
+# Front + API real (PostgreSQL)
+cp apps/web/.env.example apps/web/.env.local
 npm run dev:web                              # http://localhost:5173
 
 # API real (PostgreSQL 16)

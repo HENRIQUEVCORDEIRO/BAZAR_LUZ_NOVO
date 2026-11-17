@@ -8,7 +8,7 @@ export function caminhoEtiquetas(itens: { produtoId: string; quantidade: number 
 
 /**
  * Lê o `?produtos=` da tela: ignora o que não for id:quantidade, soma o id repetido e fica nos 200 produtos que a API aceita.
- * O id não precisa ser UUID aqui (a demonstração usa outro formato): quem confere é a API.
+ * O id é validado pela API; aqui só filtramos o formato básico do parâmetro da URL.
  */
 export function lerPedidoDaUrl(valor: string | null): { produtoId: string; quantidade: number }[] {
   if (!valor) return [];

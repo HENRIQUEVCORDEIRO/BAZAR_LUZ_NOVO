@@ -13,7 +13,7 @@ Use ao revisar uma tarefa ou antes de dizer que ela está pronta. O revisor **s�
 - [ ] Há teste para o comportamento novo, e os testes afetados passam?
 - [ ] Casos de borda: entrada vazia, formato errado, data inexistente, valor zero ou negativo, arquivo grande, repetição do mesmo pedido.
 - [ ] Nada fora do escopo, código morto ou refatoração não pedida?
-- [ ] O mock do front (`apps/web/src/mocks/`) devolve o mesmo formato que a API real?
+- [ ] A API real devolve o formato esperado pelo front (sem camada simulada no front)?
 - [ ] Documentação atualizada quando o comportamento mudou?
 - [ ] Alguma afirmação sem conferir no código (rota, permissão do perfil, tela e menu)?
 

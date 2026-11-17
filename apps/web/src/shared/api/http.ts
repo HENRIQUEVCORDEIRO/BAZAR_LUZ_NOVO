@@ -39,21 +39,14 @@ export class NetworkError extends Error {
   constructor(message = 'Sem conexão com o servidor') { super(message); this.name = 'NetworkError'; }
 }
 
-// ---------------- Transporte (real ou mock) ----------------
-export interface TransportRequest {
-  method: string;
-  path: string; // relativo a BASE, com query
-  headers: Record<string, string>;
-  body?: string | FormData;
-}
+// ---------------- Transporte HTTP (API real) ----------------
 export interface TransportResponse { status: number; headers: Record<string, string>; body: unknown }
-export type Transport = (req: TransportRequest, signal: AbortSignal) => Promise<TransportResponse>;
 
-const fetchTransport: Transport = async (req, signal) => {
-  const res = await fetch(BASE + req.path, {
-    method: req.method,
-    headers: req.headers,
-    body: req.body,
+async function fetchTransport(path: string, method: string, reqHeaders: Record<string, string>, reqBody: string | FormData | undefined, signal: AbortSignal): Promise<TransportResponse> {
+  const res = await fetch(BASE + path, {
+    method,
+    headers: reqHeaders,
+    body: reqBody,
     credentials: 'include', // envia o cookie HttpOnly de refresh (mesmo domínio / CORS restrito no servidor)
     signal,
     cache: 'no-store',
@@ -66,11 +59,7 @@ const fetchTransport: Transport = async (req, signal) => {
     body = ct.includes('json') ? await res.json().catch(() => null) : await res.blob();
   }
   return { status: res.status, headers, body };
-};
-
-let transport: Transport = fetchTransport;
-/** Usado apenas em DEV para plugar a API simulada (src/mocks). */
-export function setTransport(t: Transport) { transport = t; }
+}
 
 // ---------------- Núcleo ----------------
 export interface RequestOptions {
@@ -103,7 +92,7 @@ async function send(method: string, path: string, opts: RequestOptions): Promise
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? TIMEOUT_MS);
   try {
-    return await transport({ method, path: buildPath(path, opts.query), headers, body }, ctrl.signal);
+    return await fetchTransport(buildPath(path, opts.query), method, headers, body, ctrl.signal);
   } catch {
     throw new NetworkError(ctrl.signal.aborted ? 'Tempo de resposta esgotado' : undefined);
   } finally {
@@ -147,9 +136,9 @@ const DEFAULT_TITLES: Record<number, string> = {
   503: 'Servidor indisponível. Tente novamente em instantes.', 504: 'O servidor demorou a responder. Tente novamente.',
 };
 if (import.meta.env.DEV) {
-  // Só em desenvolvimento: diz o que fazer quando o proxy do Vite não encontra a API (localhost:3000)
+  // Só em desenvolvimento: diz o que fazer quando o proxy do Vite não encontra a API.
   for (const s of [500, 502, 503, 504]) {
-    DEFAULT_TITLES[s] = 'Não foi possível falar com a API (dev). Rode `npm run dev:api` ou use a API simulada com VITE_USE_MOCK=true em apps/web/.env.local.';
+    DEFAULT_TITLES[s] = 'Não foi possível falar com a API. Confira se a API está no ar (`npm run dev:api`).';
   }
 }
 

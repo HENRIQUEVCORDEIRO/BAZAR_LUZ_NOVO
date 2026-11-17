@@ -1,7 +1,7 @@
 # @bazar/web — Front-end
 
 Interface web (React 19 + TypeScript estrito + Vite) do sistema de bazar, com **PDV** e **Backoffice** (somente web, exige internet).
-Baseado na *Especificação Técnica* (seções 4 e 5). Não contém lógica de servidor nem banco: a pasta `src/mocks` só simula a API em desenvolvimento.
+Baseado na *Especificação Técnica* (seções 4 e 5). Não contém lógica de servidor nem banco: consome só a API real.
 
 ## Rodar
 
@@ -10,23 +10,11 @@ Passo a passo completo, com a instalação no Linux e no Windows e a API real: [
 ```bash
 npm install                      # na RAIZ do monorepo (workspaces)
 cd apps/web
-cp .env.example .env.local       # VITE_USE_MOCK=true
-npm run dev                      # http://localhost:5173
-npm run build                    # tsc + bundle de produção (sem mocks)
+cp .env.example .env.local
+npm run dev                      # http://localhost:5173 (exige a API real no ar)
+npm run build                    # tsc + bundle de produção
 npm run audit                    # (na raiz) npm audit --audit-level=high
 ```
-
-Usuários da API simulada (**somente dev**; o build de produção não inclui `src/mocks`):
-
-| Login | Senha | Perfil |
-|---|---|---|
-| `admin` | `Admin@123` | Administrador (tudo; abre caixa para pagar contas e receber fiado) |
-| `vendedor` | `Vendedor@123` | Vendedor (vai direto ao PDV) |
-| `estoquista` | `Estoquista@123` | Estoquista |
-| `financeiro` | `Financeiro@123` | Financeiro |
-
-Códigos de peças etiquetadas no seed: `BZ000001` a `BZ000005`. 
-A API simulada vive na memória da aba: recarregar a página (F5) zera os dados.
 
 ### Câmera no celular (HTTPS só de teste, S5-13)
 
@@ -39,14 +27,14 @@ VITE_HTTPS_CERT=~/bazar-cert.pem VITE_HTTPS_KEY=~/bazar-key.pem npx vite --host 
 ```
 
 No celular (mesmo Wi-Fi), abra `https://<IP do computador>:5173`, aceite o aviso do certificado (é autoassinado) e libere a câmera.
-Com a API real, acrescente `VITE_USE_MOCK=false VITE_API_PROXY=http://127.0.0.1:3100`. Isso é só para teste: a hospedagem
+Para apontar para outra API, use `VITE_API_PROXY=http://127.0.0.1:3100`. Isso é só para teste: a hospedagem
 do sistema com HTTPS de verdade é a pendência P-03. Depois do teste, volte a subir sem `--host`.
 
 ## Estrutura (por domínio — espelha `apps/api/src/modules`)
 
 ```
 src/
-  main.tsx               bootstrap: fontes, estilos, mocks (só dev)
+  main.tsx               bootstrap: fontes e estilos
   app/
     App.tsx              rotas (Especificação Técnica, seção 4) + providers
     layout/AppLayout.tsx menu lateral filtrado por permissão (só UX) + barra superior
@@ -67,7 +55,6 @@ src/
     hooks/               useAsync
     lib/                 dinheiro em centavos, datas America/Fortaleza, UUID, armazenamento local mínimo, beep
   styles/                tokens.css (brandbook) → base → components → layout → pdv → print (index.css importa todos)
-  mocks/                 API simulada (dev) — imita permissões, 409 de negócio, PEPS, idempotência
 ```
 
 Regras de dependência: `features/*` podem usar `shared/*` e, quando necessário, outra feature
@@ -120,7 +107,7 @@ Todas as cores ficam em `src/styles/tokens.css`; telas não usam cor fixa.
 | Senha provisória exibida uma única vez, nunca persistida | `UsuariosTab.tsx` |
 | Ações destrutivas pedem motivo + confirmação | `ConfirmMotivo.tsx` |
 | Anexo: checagem de tamanho/tipo só como UX; validação real (magic bytes) é do servidor | `NovoLotePage.tsx` |
-| Mocks e credenciais de teste fora do bundle de produção | `main.tsx` (`import.meta.env.DEV`) |
+| Sem credenciais de teste no bundle | `main.tsx` (sem camada simulada) |
 | Dependências sem CVE (`react-router-dom` ≥ 7.18.4) | `package.json` |
 
 **A cargo do servidor/infra (não é front):** CSP restritiva, HSTS, `@fastify/helmet`, CORS restrito, rate limit,
